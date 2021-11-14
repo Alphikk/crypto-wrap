@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <scrypt-kdf.h>
+#include <assert.h>
 #include "createkeys.h"
 /* scrypt_kdf(passwd, passwdlen, salt, saltlen, N, r, p, buf, buflen):
  * Compute scrypt(passwd[0 .. passwdlen - 1], salt[0 .. saltlen - 1], N, r,
@@ -13,7 +14,7 @@
 /*int crypto_scrypt(const uint8_t *, size_t, const uint8_t *, size_t, uint64_t,
     uint32_t, uint32_t, uint8_t *, size_t);*/
 
-int createAesKey (uint8_t * buf32,
+int createAesKey   (uint8_t * buf32,
                     int buflen,
                     const uint8_t * originalKi1,
                     int originalKi1Len,
@@ -39,40 +40,14 @@ int createAesKey (uint8_t * buf32,
                             buf32,buflen);}
     return a;
 }
-/*check 2 it !(n & (n - 1)) */
-int createCamelliaKey (uint8_t * buf32,
-                    int buflen,
-                    const uint8_t * originalKi1,
-                    int originalKi1Len,
-                    const uint8_t * originalKi2,
-                    int originalKi2Len,
-                    int parallelism)
-{
-    int a = -1;
-    if (buf32
-        && buflen == KEY_LENGTH
-        && originalKi1
-        && originalKi2
-        && originalKi1Len >= MIN_ORIGKI_LENGTH
-        && originalKi2Len >= MIN_ORIGKI_LENGTH
-        && parallelism > 0) {
-        a = crypto_scrypt(  originalKi1,
-                            originalKi1Len,
-                            originalKi2,
-                            originalKi2Len,
-                            NUMBER_OF_ITERATIONS_CAMELLIA,
-                            SCRYPT_BLOCK_SIZE+2, // для получения разных ключей при одинаковом NUMBER_OF_ITERATIONS
-                            parallelism,
-                            buf32,buflen);}
-    return a;
-}
+
 int createIV (uint8_t * buf16,
                     int buflen,
                     const uint8_t * key,
                     int keyLen,
                     int parallelism)
 {
-    int a = -1;
+    int rs = -1;
     const uint8_t * halfKeyPtr;
     if (buf16
         && buflen == IV_LENGTH
@@ -80,7 +55,7 @@ int createIV (uint8_t * buf16,
         && keyLen == KEY_LENGTH
         && parallelism > 0){
         halfKeyPtr = key + IV_LENGTH;
-        a = crypto_scrypt(  key,
+        rs = crypto_scrypt(  key,
                             KEY_LENGTH / 2,
                             halfKeyPtr,
                             KEY_LENGTH / 2,
@@ -88,6 +63,5 @@ int createIV (uint8_t * buf16,
                             SCRYPT_BLOCK_SIZE, 
                             parallelism,
                             buf16,buflen);}
-    return a;
+    return rs;
 }
-

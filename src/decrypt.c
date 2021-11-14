@@ -1,20 +1,17 @@
 #include <stdio.h>
 #include <string.h>
-#include <openssl/evp.h>
-#include <openssl/conf.h>
-#include <openssl/err.h>
+#include "decrypt.h"
 
-int decryptAes( unsigned char *ciphertext,
-                int ciphertext_len,
-                unsigned char *key,
-                unsigned char *iv,
-                unsigned char *plaintext)
+int __decrypt_aes( uint8_t *ciphertext,
+                uint64_t ciphertext_len,
+                uint8_t *key,
+                uint8_t *iv,
+                uint8_t *plaintext,
+                uint64_t * plaintext_len)
 {
     EVP_CIPHER_CTX *ctx;
 
-    int len;
-
-    int plaintext_len;
+    int len = 0;
 
     /* Create and initialise the context */
     if(!(ctx = EVP_CIPHER_CTX_new()))
@@ -34,52 +31,27 @@ int decryptAes( unsigned char *ciphertext,
      * Provide the message to be decrypted, and obtain the plaintext output.
      * EVP_DecryptUpdate can be called multiple times if necessary.
      */
-    if(1 != EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, ciphertext_len))
+    if(1 != EVP_DecryptUpdate(ctx, 
+                              plaintext,
+                              &len,
+                              ciphertext,
+                              ciphertext_len)) {
         handleErrors();
-    plaintext_len = len;
+                              }
+    *plaintext_len = len;
 
     /*
      * Finalise the decryption. Further plaintext bytes may be written at
      * this stage.
      */
-    if(1 != EVP_DecryptFinal_ex(ctx, plaintext + len, &len))
+    if(1 != EVP_DecryptFinal_ex(ctx, plaintext + len, &len)){
         handleErrors();
-    plaintext_len += len;
+    }
+
+    *plaintext_len += len;
 
     /* Clean up */
     EVP_CIPHER_CTX_free(ctx);
 
-    return plaintext_len;
-}
-
-
-int decryptCamellia(unsigned char *ciphertext,
-                    int ciphertext_len,
-                    unsigned char *key,
-                    unsigned char *iv,
-                    unsigned char *plaintext)
-{
-    EVP_CIPHER_CTX *ctx;
-
-    int len;
-
-    int plaintext_len;
-
-    if(!(ctx = EVP_CIPHER_CTX_new()))
-        handleErrors();
-
-    if(1 != EVP_DecryptInit_ex(ctx, EVP_camellia_256_cfb(), NULL, key, iv))
-        handleErrors();
-
-    if(1 != EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, ciphertext_len))
-        handleErrors();
-    plaintext_len = len;
-
-    if(1 != EVP_DecryptFinal_ex(ctx, plaintext + len, &len))
-        handleErrors();
-    plaintext_len += len;
-
-    EVP_CIPHER_CTX_free(ctx);
-
-    return plaintext_len;
+    return 0;
 }

@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
-#include <openssl/evp.h>
-#include <openssl/conf.h>
-#include <openssl/err.h>
+#include "encrypt.h"
+#define IN
+#define OUT
+#define INOUT
+
 
 void handleErrors(void)
 {
@@ -10,15 +12,15 @@ void handleErrors(void)
     abort();
 }
 
-int encryptAes( unsigned char *plaintext,
-                int plaintext_len,
-                unsigned char *key,
-                unsigned char *iv,
-                unsigned char *ciphertext)
+int __encrypt_aes(IN   uint8_t *plaintext,
+                  IN   uint64_t plaintext_len,
+                  IN   uint8_t *key,
+                  IN   uint8_t *iv,
+                  OUT  uint8_t *ciphertext,
+                  OUT  uint64_t * ciphertext_len)
 {
     EVP_CIPHER_CTX *ctx;
-    int len;
-    int ciphertext_len;
+    int len = 0;
     /* Create and initialise the context */
     if(!(ctx = EVP_CIPHER_CTX_new()))
         handleErrors();
@@ -29,49 +31,38 @@ int encryptAes( unsigned char *plaintext,
      * IV size for *most* modes is the same as the block size. For AES this
      * is 128 bits
      */
-    if(1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+    if(1 != EVP_EncryptInit_ex(ctx,
+                               EVP_aes_256_cbc(),
+                               NULL,
+                               key,
+                               iv)) {
         handleErrors();
+    }
     /*
      * Provide the message to be encrypted, and obtain the encrypted output.
      * EVP_EncryptUpdate can be called multiple times if necessary
      */
-    if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len))
+    if(1 != EVP_EncryptUpdate(ctx,
+                              ciphertext,
+                              &len,
+                              plaintext,
+                              plaintext_len)) {
         handleErrors();
-    ciphertext_len = len;
+    }
+        
+    *ciphertext_len = len;
     /*
      * Finalise the encryption. Further ciphertext bytes may be written at
      * this stage.
      */
-    if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len))
+    if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) {
         handleErrors();
-    ciphertext_len += len;
+    }
+    *ciphertext_len += len;
     /* Clean up */
     EVP_CIPHER_CTX_free(ctx);
-    return ciphertext_len;
-}
 
-
-int encryptCamellia(unsigned char *plaintext,
-                    int plaintext_len,
-                    unsigned char * key,
-                    unsigned char * iv,
-                    unsigned char * ciphertext)
-{
-    EVP_CIPHER_CTX * ctx;
-    int len;
-    int ciphertext_len;
-    if(!(ctx = EVP_CIPHER_CTX_new()))
-        handleErrors();
-    if(1 != EVP_EncryptInit_ex(ctx, EVP_camellia_256_cfb(), NULL, key, iv))
-        handleErrors();
-    if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len))
-        handleErrors();
-    ciphertext_len = len;
-    if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len))
-        handleErrors();
-    ciphertext_len += len;
-    EVP_CIPHER_CTX_free(ctx);
-    return ciphertext_len;
+    return 0;
 }
 
 
