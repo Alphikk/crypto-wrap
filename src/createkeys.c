@@ -2,7 +2,8 @@
 #include <inttypes.h>
 #include <scrypt-kdf.h>
 #include <assert.h>
-#include "createkeys.h"
+#include "../include/createkeys.h"
+
 /* scrypt_kdf(passwd, passwdlen, salt, saltlen, N, r, p, buf, buflen):
  * Compute scrypt(passwd[0 .. passwdlen - 1], salt[0 .. saltlen - 1], N, r,
  * p, buflen) and write the result into buf.  The parameters r, p, and buflen
@@ -41,6 +42,7 @@ int createAesKey   (uint8_t * buf32,
     return a;
 }
 
+/*FIX IT: SWAP args! */
 int createIV (uint8_t * buf16,
                     int buflen,
                     const uint8_t * key,

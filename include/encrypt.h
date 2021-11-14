@@ -1,3 +1,6 @@
+#ifndef ENCRYPT_H
+#define ENCRYPT_H
+
 #include <openssl/evp.h>
 #include <openssl/conf.h>
 #include <openssl/err.h>
@@ -10,3 +13,4 @@ int __encrypt_aes( uint8_t *plaintext,
                 uint8_t *iv,
                 uint8_t *ciphertext,
                 uint64_t * ciphertext_len);
+#endif

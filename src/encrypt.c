@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "encrypt.h"
+#include "../include/encrypt.h"
 #define IN
 #define OUT
 #define INOUT
