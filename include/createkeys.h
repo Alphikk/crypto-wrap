@@ -1,5 +1,5 @@
 #ifndef CREATE_KEYS_H
-#define CREATE_KEYS_Hs
+#define CREATE_KEYS_H
 
 
 #include <inttypes.h>
