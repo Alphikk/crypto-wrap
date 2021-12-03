@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "../include/decrypt.h"
+#include "decrypt.h"
 
 int __decrypt_aes( uint8_t *ciphertext,
                 uint64_t ciphertext_len,

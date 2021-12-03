@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/createkeys.h"
-#include "../include/encrypt.h"
-#include "../include/decrypt.h"
+#include "createkeys.h"
+#include "encrypt.h"
+#include "decrypt.h"
 
 
 uint8_t * teststring = "Задача организации, в особенности же курс на социально-ориентированный национальный проект "

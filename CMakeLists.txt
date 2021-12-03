@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project (cryptoQR)
 
-set (${INCLUDE_DIR} "./include")
+set (INCLUDE_DIR "./include")
 
 
 

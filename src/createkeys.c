@@ -2,7 +2,7 @@
 #include <inttypes.h>
 #include <scrypt-kdf.h>
 #include <assert.h>
-#include "../include/createkeys.h"
+#include "createkeys.h"
 
 /* scrypt_kdf(passwd, passwdlen, salt, saltlen, N, r, p, buf, buflen):
  * Compute scrypt(passwd[0 .. passwdlen - 1], salt[0 .. saltlen - 1], N, r,
@@ -23,7 +23,7 @@ int createAesKey   (uint8_t * buf32,
                     int originalKi2Len,
                     int parallelism)
 {
-    int a = -1;
+    int rs;
     if (buf32
         && buflen == KEY_LENGTH
         && originalKi1
@@ -31,15 +31,25 @@ int createAesKey   (uint8_t * buf32,
         && originalKi1Len >= MIN_ORIGKI_LENGTH
         && originalKi2Len >= MIN_ORIGKI_LENGTH
         && parallelism > 0) {
-        a = crypto_scrypt(  originalKi1,
-                            originalKi1Len,
-                            originalKi2,
-                            originalKi2Len,
-                            NUMBER_OF_ITERATIONS_AES,
-                            SCRYPT_BLOCK_SIZE,
-                            parallelism,
-                            buf32,buflen);}
-    return a;
+
+
+          rs = crypto_scrypt(originalKi1,
+                             originalKi1Len,
+                             originalKi2,
+                             originalKi2Len,
+                             NUMBER_OF_ITERATIONS_AES,
+                             SCRYPT_BLOCK_SIZE,
+                             parallelism,
+                             buf32,
+                             buflen);
+        return rs;
+
+    } else {
+        return -1;
+    }
+
+
+
 }
 
 /*FIX IT: SWAP args! */
