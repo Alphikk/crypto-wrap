@@ -3,6 +3,9 @@
 
 
 #include <inttypes.h>
+
+#include "general.h"
+
 #define MIN_ORIGKI_LENGTH 32 // Минимальная длина строки для пароля и соли
 #define IV_LENGTH 16 // Размер Вектора Инициализации (Подходит для обоих алгоритмов, равен размеру блока)
 #define KEY_LENGTH 32 // Размер ключа для обоих алгоритмов 256 бит

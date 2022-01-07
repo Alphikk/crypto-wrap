@@ -1,10 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "encrypt.h"
-#define IN
-#define OUT
-#define INOUT
-
 
 void handleErrors(void)
 {
