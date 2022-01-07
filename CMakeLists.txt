@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project (cryptoQR)
 
+find_package(PkgConfig REQUIRED)
 set (INCLUDE_DIR "./include")
 
 
@@ -23,8 +24,13 @@ target_include_directories(decrypt PUBLIC ${INCLUDE_DIR})
 target_link_libraries(decrypt -lssl -lcrypto)
 
 add_executable(test src/test.c)
-
-
 target_include_directories(test PUBLIC ${INCLUDE_DIR})
 target_link_libraries(test createkeys encrypt decrypt)
+
+# for camera capture with gstreamer
+pkg_check_modules(GST REQUIRED gstreamer-1.0>=1.8)
+add_executable(capture_webcam src/capture_webcam.c)
+include_directories(capture_webcam ${GST_INCLUDE_DIRS})
+target_link_libraries(capture_webcam ${GST_LIBRARIES})
+
 

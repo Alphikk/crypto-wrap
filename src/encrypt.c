@@ -2,11 +2,13 @@
 #include <string.h>
 #include "encrypt.h"
 
+
 void handleErrors(void)
 {
     ERR_print_errors_fp(stderr);
     abort();
 }
+
 
 int __encrypt_aes(IN   uint8_t *plaintext,
                   IN   uint64_t plaintext_len,
