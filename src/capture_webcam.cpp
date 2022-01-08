@@ -7,8 +7,8 @@
 int main(int argc, char * argv[])
 {
   cv::Mat image;
-  // std::vector<cv::Point> bbox;
-  // cv::Mat rectifiedImage;
+  std::vector<cv::Point> bbox;
+  cv::Mat rectifiedImage;
 
   cv::VideoCapture cap(0);
   cv::QRCodeDetector qrDecoder = cv::QRCodeDetector();
@@ -23,7 +23,17 @@ int main(int argc, char * argv[])
     cap >> image;
 
     data = qrDecoder.detectAndDecode(image);
-    
+
+    if  (qrDecoder.detect(image,bbox)){
+      std::cout << "qrDecoder.detect() is true " << std::endl;
+
+      for (int i = 0; i < bbox.size();i++) {
+        
+        std::cout << "xy =   " << bbox[i].x << " " << bbox[i].y  << std::endl;
+      }
+      cv::Rect rRect(bbox[0], bbox[2]);
+      cv::rectangle(image,rRect,100);
+    }
     cv::imshow("Display window", image);
     if (!data.empty()) {
       std::cout << "Decoded Data : " << data << std::endl;
