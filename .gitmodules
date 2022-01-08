@@ -1,3 +1,7 @@
 [submodule "scrypt"]
 	path = scrypt
 	url = https://github.com/Tarsnap/scrypt.git
+[submodule "libqrencode"]
+	path = libqrencode
+	url = https://github.com/fukuchi/libqrencode.git
+	branch = 4.0

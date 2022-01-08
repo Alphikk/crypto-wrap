@@ -74,6 +74,7 @@ int createIV (uint8_t * buf16,
                             NUMBER_OF_ITERATIONS_IV,
                             SCRYPT_BLOCK_SIZE, 
                             parallelism,
-                            buf16,buflen);}
+                            buf16,
+                            buflen);}
     return rs;
 }

@@ -45,13 +45,6 @@ int main( int argc, char *argv[])
                         IV_buf,
                         ciphertext_ptr,
                         &ciphertext_len);
-                        
-    for (int i = 0; i < ciphertext_len; i++) {
-
-        printf("%c",ciphertext_ptr[i]);
-
-    }
-    printf("\n");
     
     if (!rs) {
         rs = __decrypt_aes (   ciphertext_ptr,
@@ -73,6 +66,9 @@ int __decrypt_aes( uint8_t *ciphertext,
     if (!rs) {
         printf("%s\n",decrypt_plain_text_ptr);
     }
+
+    free(ciphertext_ptr);
+    free(decrypt_plain_text_ptr);
 
     return 0;
 }
