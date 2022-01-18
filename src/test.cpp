@@ -1,29 +1,30 @@
 #include <stdlib.h>
 #include <string.h>
+#include <qrencode.h>
 
 #include "createkeys.h"
 #include "encrypt.h"
 #include "decrypt.h"
 
 
-uint8_t * teststring = "ВасяВасяВасяВасяВасяВасяВасяВасяВасяВася";
-
-
 int main( int argc, char *argv[])
 {
 
-
+	QRcode *qrcode = QRcode_encodeString(argv[1], 0, QR_ECLEVEL_L,
+					     QR_MODE_8, 1);
     /* create keys */
     uint8_t key_buf[32];
     uint8_t IV_buf[16];
     char * source_text1 = "12345678901234567890123456789012";
     char * source_text2 = "98765432109876543210987654321098";
 
+    char teststring[] = "ВасяВасяВасяВасяВасяВасяВасяВасяВасяВася";
+
     createAesKey(key_buf,
                  32,
-                 source_text1,
+                 (const uint8_t *) source_text1,
                  strlen(source_text1),
-                 source_text2,
+                 (const uint8_t *) source_text2,
                  strlen(source_text2),
                  2);
 
@@ -33,13 +34,13 @@ int main( int argc, char *argv[])
 
     /* crypt and decrypt */
     uint64_t pt_len = strlen(teststring)+1;
-    uint8_t * ciphertext_ptr = malloc(pt_len + 16);
-    uint8_t * decrypt_plain_text_ptr = malloc(pt_len+16);
+    uint8_t * ciphertext_ptr = (uint8_t *) malloc(pt_len + 16);
+    uint8_t * decrypt_plain_text_ptr = (uint8_t *) malloc(pt_len+16);
     uint64_t ciphertext_len = 0;
     /*end crypt and decrypt */
 
     int rs;
-    rs = __encrypt_aes(  teststring,
+    rs = __encrypt_aes((uint8_t *)teststring,
                         pt_len,
                         key_buf,
                         IV_buf,

@@ -1,6 +1,11 @@
 #ifndef CREATE_KEYS_H
 #define CREATE_KEYS_H
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
 
 #include <inttypes.h>
 
@@ -36,5 +41,10 @@ enum createkeys_func {
     CREATE_CAMELLIA_KEY,
     CREATE_IV
 }; */
+
+#ifdef __cplusplus
+}
+
+#endif
 
 #endif

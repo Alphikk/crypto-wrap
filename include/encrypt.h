@@ -1,6 +1,15 @@
 #ifndef ENCRYPT_H
 #define ENCRYPT_H
 
+
+
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
+
 #include <openssl/evp.h>
 #include <openssl/conf.h>
 #include <openssl/err.h>
@@ -14,4 +23,12 @@ int __encrypt_aes( uint8_t *plaintext,
                 uint8_t *iv,
                 uint8_t *ciphertext,
                 uint64_t * ciphertext_len);
+
+
+#ifdef __cplusplus
+}
+
+#endif
+
+
 #endif
