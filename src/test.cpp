@@ -9,16 +9,17 @@
 
 int main( int argc, char *argv[])
 {
+    
+    QRinput * qrInput = QRinput_new(); // need call QRinput_free(qrInput);
 
-	QRcode *qrcode = QRcode_encodeString(argv[1], 0, QR_ECLEVEL_L,
-					     QR_MODE_8, 1);
+
     /* create keys */
     uint8_t key_buf[32];
     uint8_t IV_buf[16];
     char * source_text1 = "12345678901234567890123456789012";
     char * source_text2 = "98765432109876543210987654321098";
 
-    char teststring[] = "ВасяВасяВасяВасяВасяВасяВасяВасяВасяВася";
+    char teststring[] = "ВасяВасяВасяВася";
 
     createAesKey(key_buf,
                  32,
@@ -28,9 +29,23 @@ int main( int argc, char *argv[])
                  strlen(source_text2),
                  2);
 
-    createIV(IV_buf,16,key_buf,32,2);
-
+    createIV(IV_buf,16,key_buf,32,2); // TODO: pull from /dev/null
     /* end create keys */
+
+    /* make QR code */
+    QRinput_append(qrInput,
+                   QR_MODE_STRUCTURE,
+                   16,
+                   IV_buf); // add data to QR code;
+
+    uint64_t textLen = strlen(teststring)+1;
+    QRinput_append(qrInput,
+                   QR_MODE_STRUCTURE,
+                   textLen,
+                   (const unsigned char *)teststring);
+
+    QRcode* qrCode =  QRcode_encodeInput(qrInput);
+    /* end make QR code */
 
     /* crypt and decrypt */
     uint64_t pt_len = strlen(teststring)+1;

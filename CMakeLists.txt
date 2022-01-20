@@ -27,7 +27,7 @@ target_link_libraries(decrypt -lssl -lcrypto)
 
 add_executable(test src/test.cpp)
 target_include_directories(test PUBLIC ${INCLUDE_DIR})
-target_link_libraries(test createkeys encrypt decrypt)
+target_link_libraries(test createkeys encrypt decrypt -lqrencode)
 
 # for camera capture with gstreamer
 #pkg_check_modules(GST REQUIRED gstreamer-1.0>=1.8)
