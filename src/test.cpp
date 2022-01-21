@@ -2,21 +2,63 @@
 #include <string.h>
 #include <qrencode.h>
 
+#include <opencv2/opencv.hpp>
+
 #include "createkeys.h"
 #include "encrypt.h"
 #include "decrypt.h"
+
+
+
+
+
+cv::Mat drawQRcode (QRcode* code, int imgSize, cv::Scalar fColor)
+{
+    int sqareSize = imgSize / code->width;
+    sqareSize = (sqareSize == 0)  ? 1 : sqareSize;
+    cv::Mat img = cv::Mat::zeros(imgSize,imgSize,CV_8UC3);
+
+    u_char *p = code->data;
+
+    int x; 
+    int y;
+    int posX = 0;
+    int posY = 0;
+
+    for (y = 0 ; y < code->width ; y++)
+    {
+        for (x = 0 ; x < code->width ; x++)
+        {
+            if (*p & 1)
+            {
+                posX = x * sqareSize;
+                posY = y * sqareSize;
+
+                cv::Rect rect(posX,posY,sqareSize,sqareSize); // x,y,w,h
+
+                cv::rectangle(img, rect, fColor, -1, 8);
+
+            } else {
+
+            }
+            p++;
+        }
+    }
+    return img;
+}
+
 
 
 int main( int argc, char *argv[])
 {
     
     QRinput * qrInput = QRinput_new(); // need call QRinput_free(qrInput);
-
+    cv::Mat qrImg;
 
     /* create keys */
     uint8_t key_buf[32];
     uint8_t IV_buf[16];
-    char * source_text1 = "12345678901234567890123456789012";
+    char * source_text1 = "12345678901234567890123456789013";
     char * source_text2 = "98765432109876543210987654321098";
 
     char teststring[] = "ВасяВасяВасяВася";
@@ -34,17 +76,23 @@ int main( int argc, char *argv[])
 
     /* make QR code */
     QRinput_append(qrInput,
-                   QR_MODE_STRUCTURE,
+                   QR_MODE_8,
                    16,
                    IV_buf); // add data to QR code;
 
     uint64_t textLen = strlen(teststring)+1;
     QRinput_append(qrInput,
-                   QR_MODE_STRUCTURE,
+                   QR_MODE_8,
                    textLen,
                    (const unsigned char *)teststring);
 
     QRcode* qrCode =  QRcode_encodeInput(qrInput);
+
+    qrImg = drawQRcode(qrCode,300,{255,255,255});
+
+    cv::imshow("image",qrImg);
+    cv::waitKey(0);
+    printf("%d\n",qrCode->width);
     /* end make QR code */
 
     /* crypt and decrypt */
