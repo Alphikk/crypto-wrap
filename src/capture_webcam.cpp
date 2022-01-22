@@ -25,12 +25,8 @@ int main(int argc, char * argv[])
     data = qrDecoder.detectAndDecode(image);
 
     if  (qrDecoder.detect(image,bbox)){
-      std::cout << "qrDecoder.detect() is true " << std::endl;
+      std::cout << "detect" << std::endl;
 
-      for (int i = 0; i < bbox.size();i++) {
-        
-        std::cout << "xy =   " << bbox[i].x << " " << bbox[i].y  << std::endl;
-      }
       cv::Rect rRect(bbox[0], bbox[2]);
       cv::rectangle(image,rRect,100);
     }

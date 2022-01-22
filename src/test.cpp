@@ -16,7 +16,8 @@ cv::Mat drawQRcode (QRcode* code, int imgSize, cv::Scalar fColor)
 {
     int sqareSize = imgSize / code->width;
     sqareSize = (sqareSize == 0)  ? 1 : sqareSize;
-    cv::Mat img = cv::Mat::zeros(imgSize,imgSize,CV_8UC3);
+    // cv::Mat img = cv::Mat::zeros(imgSize,imgSize,CV_8UC3);
+    cv::Mat img (imgSize,imgSize,CV_8UC3,fColor);
 
     u_char *p = code->data;
 
@@ -36,7 +37,7 @@ cv::Mat drawQRcode (QRcode* code, int imgSize, cv::Scalar fColor)
 
                 cv::Rect rect(posX,posY,sqareSize,sqareSize); // x,y,w,h
 
-                cv::rectangle(img, rect, fColor, -1, 8);
+                cv::rectangle(img, rect, {0,0,0}, -1, 8);
 
             } else {
 
@@ -51,8 +52,6 @@ cv::Mat drawQRcode (QRcode* code, int imgSize, cv::Scalar fColor)
 
 int main( int argc, char *argv[])
 {
-    
-    QRinput * qrInput = QRinput_new(); // need call QRinput_free(qrInput);
     cv::Mat qrImg;
 
     /* create keys */
@@ -61,7 +60,7 @@ int main( int argc, char *argv[])
     char * source_text1 = "12345678901234567890123456789013";
     char * source_text2 = "98765432109876543210987654321098";
 
-    char teststring[] = "ВасяВасяВасяВася";
+     const char * teststring = "MTExMTExMTExMTExMTExMdCf0YDQuNCy0LXRgiDQutCw0Log0LTQtdC70LA/";
 
     createAesKey(key_buf,
                  32,
@@ -74,29 +73,15 @@ int main( int argc, char *argv[])
     createIV(IV_buf,16,key_buf,32,2); // TODO: pull from /dev/null
     /* end create keys */
 
-    /* make QR code */
-    QRinput_append(qrInput,
-                   QR_MODE_8,
-                   16,
-                   IV_buf); // add data to QR code;
+    // QRinput_append(qrInput,
+    //                QR_MODE_8, // QR_MODE_8
+    //                16,
+    //                IV_buf); // add data to QR code;
 
-    uint64_t textLen = strlen(teststring)+1;
-    QRinput_append(qrInput,
-                   QR_MODE_8,
-                   textLen,
-                   (const unsigned char *)teststring);
 
-    QRcode* qrCode =  QRcode_encodeInput(qrInput);
-
-    qrImg = drawQRcode(qrCode,300,{255,255,255});
-
-    cv::imshow("image",qrImg);
-    cv::waitKey(0);
-    printf("%d\n",qrCode->width);
-    /* end make QR code */
 
     /* crypt and decrypt */
-    uint64_t pt_len = strlen(teststring)+1;
+    uint64_t pt_len = strlen((const char *)teststring)+1;
     uint8_t * ciphertext_ptr = (uint8_t *) malloc(pt_len + 16);
     uint8_t * decrypt_plain_text_ptr = (uint8_t *) malloc(pt_len+16);
     uint64_t ciphertext_len = 0;
@@ -109,6 +94,21 @@ int main( int argc, char *argv[])
                         IV_buf,
                         ciphertext_ptr,
                         &ciphertext_len);
+
+    // QRinput_append(qrInput,
+    //                QR_MODE_8,
+    //                ciphertext_len,
+    //                ciphertext_ptr);
+
+
+    QRcode * code = QRcode_encodeString (teststring,0,QR_ECLEVEL_L,QR_MODE_8,1);
+
+    qrImg = drawQRcode(code,400,{255,255,255});
+    printf("code width =  %d\n",code->width);
+    printf("code version =  %d\n",code->version);
+    cv::imshow("image",qrImg);
+    cv::waitKey(0);
+
     
     if (!rs) {
         rs = __decrypt_aes (   ciphertext_ptr,
