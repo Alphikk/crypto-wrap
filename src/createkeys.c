@@ -15,13 +15,13 @@
 /*int crypto_scrypt(const uint8_t *, size_t, const uint8_t *, size_t, uint64_t,
     uint32_t, uint32_t, uint8_t *, size_t);*/
 
-int createAesKey   (uint8_t * buf32,
-                    int buflen,
-                    const uint8_t * originalKi1,
-                    int originalKi1Len,
-                    const uint8_t * originalKi2,
-                    int originalKi2Len,
-                    int parallelism)
+int
+createKey_  (uint8_t * buf32,
+             int buflen,
+             const uint8_t * originalKi1,
+             int originalKi1Len,
+             const uint8_t * originalKi2,
+             int originalKi2Len)
 {
     int rs;
     if (buf32
@@ -29,8 +29,7 @@ int createAesKey   (uint8_t * buf32,
         && originalKi1
         && originalKi2
         && originalKi1Len >= MIN_ORIGKI_LENGTH
-        && originalKi2Len >= MIN_ORIGKI_LENGTH
-        && parallelism > 0) {
+        && originalKi2Len >= MIN_ORIGKI_LENGTH ) {
 
 
           rs = crypto_scrypt(originalKi1,
@@ -39,7 +38,7 @@ int createAesKey   (uint8_t * buf32,
                              originalKi2Len,
                              NUMBER_OF_ITERATIONS_AES,
                              SCRYPT_BLOCK_SIZE,
-                             parallelism,
+                             DEGREE_OF_PARALLELISM,
                              buf32,
                              buflen);
         return rs;
@@ -48,24 +47,23 @@ int createAesKey   (uint8_t * buf32,
         return -1;
     }
 
-
-
 }
 
 /*FIX IT: SWAP args! */
 int createIV (uint8_t * buf16,
                     int buflen,
                     const uint8_t * key,
-                    int keyLen,
-                    int parallelism)
+                    int keyLen)
 {
     int rs = -1;
     const uint8_t * halfKeyPtr;
+
     if (buf16
         && buflen == IV_LENGTH
         && key
-        && keyLen == KEY_LENGTH
-        && parallelism > 0){
+        && keyLen == KEY_LENGTH) {
+
+
         halfKeyPtr = key + IV_LENGTH;
         rs = crypto_scrypt(  key,
                             KEY_LENGTH / 2,
@@ -73,7 +71,7 @@ int createIV (uint8_t * buf16,
                             KEY_LENGTH / 2,
                             NUMBER_OF_ITERATIONS_IV,
                             SCRYPT_BLOCK_SIZE, 
-                            parallelism,
+                            DEGREE_OF_PARALLELISM,
                             buf16,
                             buflen);}
     return rs;

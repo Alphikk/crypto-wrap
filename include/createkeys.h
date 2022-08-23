@@ -19,19 +19,17 @@ extern "C" {
 #define SCRYPT_BLOCK_SIZE 8 // Размер блока для scrypt
 #define DEGREE_OF_PARALLELISM 1 // Степень параллельности scrypt - влияет на время выполнения
 
-int createAesKey (  uint8_t * buf32,
-                    int buflen,
-                    const uint8_t * originalKi1,
-                    int originalKi1Len,
-                    const uint8_t * originalKi2,
-                    int originalKi2Len,
-                    int parallelism);
+int createKey_ (  uint8_t * buf32,
+                  int buflen,
+                  const uint8_t * originalKi1,
+                  int originalKi1Len,
+                  const uint8_t * originalKi2,
+                  int originalKi2Len );
 
-int createIV (  uint8_t * buf16,
+int createIV_ ( uint8_t * buf16,
                 int buflen,
                 const uint8_t * key,
-                int keyLen,
-                int parallelism);
+                int keyLen );
 
 /* ZMQ */
 //void createkeys_init(void);
