@@ -2,12 +2,12 @@
 #include <string.h>
 #include "decrypt.h"
 
-int __decrypt_aes( uint8_t *ciphertext,
-                uint64_t ciphertext_len,
-                uint8_t *key,
-                uint8_t *iv,
-                uint8_t *plaintext,
-                uint64_t * plaintext_len)
+int decrypt_aes_( uint8_t *ciphertext,
+                  uint64_t ciphertext_len,
+                  const uint8_t *key,
+                  const uint8_t *iv,
+                  uint8_t *plaintext,
+                  uint64_t * plaintext_len )
 {
     EVP_CIPHER_CTX *ctx;
 

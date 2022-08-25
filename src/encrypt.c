@@ -10,12 +10,12 @@ void handleErrors(void)
 }
 
 
-int __encrypt_aes(IN   uint8_t *plaintext,
-                  IN   uint64_t plaintext_len,
-                  IN   uint8_t *key,
-                  IN   uint8_t *iv,
-                  OUT  uint8_t *ciphertext,
-                  OUT  uint64_t * ciphertext_len)
+int encrypt_aes_(const    uint8_t * plaintext,
+                 const    uint64_t plaintext_len,
+                 const    uint8_t  * key,
+                 const    uint8_t  * iv,
+                 uint8_t  * ciphertext,
+                 uint64_t * ciphertext_len)
 {
     EVP_CIPHER_CTX *ctx;
     int len = 0;

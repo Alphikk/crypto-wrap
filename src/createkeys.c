@@ -14,32 +14,39 @@
  */
 /*int crypto_scrypt(const uint8_t *, size_t, const uint8_t *, size_t, uint64_t,
     uint32_t, uint32_t, uint8_t *, size_t);*/
+#ifdef __cplusplus
 
+extern "C" {
+
+#endif
 int
-createKey_  (uint8_t * buf32,
-             int buflen,
-             const uint8_t * originalKi1,
-             int originalKi1Len,
-             const uint8_t * originalKi2,
-             int originalKi2Len)
+createKey_  (uint8_t *          buf,
+             int                buflen,
+             const uint8_t *    password,
+             size_t             passwordLen,
+             const uint8_t *    salt,
+             size_t             saltLen,
+             uint64_t           numberOfIterations,
+             uint32_t           blockSize,
+             uint32_t           parallelizm)
 {
     int rs;
-    if (buf32
-        && buflen == KEY_LENGTH
-        && originalKi1
-        && originalKi2
-        && originalKi1Len >= MIN_ORIGKI_LENGTH
-        && originalKi2Len >= MIN_ORIGKI_LENGTH ) {
+    if (buf && 
+        buflen >= KEY_LENGTH &&
+        password &&
+        salt &&
+        passwordLen >= SCRYPT_MIN_SOURCE_LENGTH &&
+        saltLen >= SCRYPT_MIN_SOURCE_LENGTH ) {
 
 
-          rs = crypto_scrypt(originalKi1,
-                             originalKi1Len,
-                             originalKi2,
-                             originalKi2Len,
-                             NUMBER_OF_ITERATIONS_AES,
-                             SCRYPT_BLOCK_SIZE,
-                             DEGREE_OF_PARALLELISM,
-                             buf32,
+          rs = crypto_scrypt(password,
+                             passwordLen,
+                             salt,
+                             saltLen,
+                             numberOfIterations,
+                             blockSize,
+                             parallelizm,
+                             buf,
                              buflen);
         return rs;
 
@@ -49,30 +56,34 @@ createKey_  (uint8_t * buf32,
 
 }
 
-/*FIX IT: SWAP args! */
-int createIV (uint8_t * buf16,
-                    int buflen,
-                    const uint8_t * key,
-                    int keyLen)
-{
-    int rs = -1;
-    const uint8_t * halfKeyPtr;
+// /*FIX IT: SWAP args! */
+// int createIV (uint8_t * buf16,
+//                     int buflen,
+//                     const uint8_t * key,
+//                     int keyLen)
+// {
+//     int rs = -1;
+//     const uint8_t * halfKeyPtr;
 
-    if (buf16
-        && buflen == IV_LENGTH
-        && key
-        && keyLen == KEY_LENGTH) {
+//     if (buf16
+//         && buflen == IV_LENGTH
+//         && key
+//         && keyLen == KEY_LENGTH) {
 
 
-        halfKeyPtr = key + IV_LENGTH;
-        rs = crypto_scrypt(  key,
-                            KEY_LENGTH / 2,
-                            halfKeyPtr,
-                            KEY_LENGTH / 2,
-                            NUMBER_OF_ITERATIONS_IV,
-                            SCRYPT_BLOCK_SIZE, 
-                            DEGREE_OF_PARALLELISM,
-                            buf16,
-                            buflen);}
-    return rs;
+//         halfKeyPtr = key + IV_LENGTH;
+//         rs = crypto_scrypt(  key,
+//                             KEY_LENGTH / 2,
+//                             halfKeyPtr,
+//                             KEY_LENGTH / 2,
+//                             SCRYPT_IV_NUMBER_OF_ITERATIONS,
+//                             SCRYPT_BLOCK_SIZE, 
+//                             SCRYPT_DEGREE_OF_PARALLELISM,
+//                             buf16,
+//                             buflen);}
+//     return rs;
+// }
+#ifdef __cplusplus
 }
+
+#endif

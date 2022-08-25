@@ -8,10 +8,7 @@ extern "C" {
 
 #endif
 
-
-#define IN
-#define OUT
-#define INOUT
+#include <stddef.h>
 
 
 #ifdef __cplusplus
