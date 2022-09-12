@@ -3,25 +3,25 @@
 #include "encrypt.h"
 
 
-void handleErrors(void)
-{
-    ERR_print_errors_fp(stderr);
-    abort();
-}
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
 
 
-int encrypt_aes_(const    uint8_t * plaintext,
-                 const    uint64_t plaintext_len,
-                 const    uint8_t  * key,
-                 const    uint8_t  * iv,
-                 uint8_t  * ciphertext,
-                 uint64_t * ciphertext_len)
+
+int
+encrypt_aes_(EVP_CIPHER_CTX *ctx,
+             const    uint8_t * plaintext,
+             const    uint64_t plaintext_len,
+             const    uint8_t  * key,
+             const    uint8_t  * iv,
+             uint8_t  * ciphertext,
+             uint64_t * ciphertext_len)
 {
-    EVP_CIPHER_CTX *ctx;
     int len = 0;
-    /* Create and initialise the context */
-    if(!(ctx = EVP_CIPHER_CTX_new()))
-        handleErrors();
+    
     /*
      * Initialise the encryption operation. IMPORTANT - ensure you use a key
      * and IV size appropriate for your cipher
@@ -29,23 +29,20 @@ int encrypt_aes_(const    uint8_t * plaintext,
      * IV size for *most* modes is the same as the block size. For AES this
      * is 128 bits
      */
-    if(1 != EVP_EncryptInit_ex(ctx,
-                               EVP_aes_256_cbc(),
-                               NULL,
-                               key,
-                               iv)) {
-        handleErrors();
+    int rs = -1;
+    rs = EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv);
+
+    if( rs != OPENSSL_SUCCESS_) {
+        return -1;
     }
     /*
      * Provide the message to be encrypted, and obtain the encrypted output.
      * EVP_EncryptUpdate can be called multiple times if necessary
      */
-    if(1 != EVP_EncryptUpdate(ctx,
-                              ciphertext,
-                              &len,
-                              plaintext,
-                              plaintext_len)) {
-        handleErrors();
+    rs = EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len);
+    if( rs != OPENSSL_SUCCESS_) {
+        
+        return -1;
     }
         
     *ciphertext_len = len;
@@ -53,14 +50,18 @@ int encrypt_aes_(const    uint8_t * plaintext,
      * Finalise the encryption. Further ciphertext bytes may be written at
      * this stage.
      */
-    if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) {
-        handleErrors();
+    rs = EVP_EncryptFinal_ex(ctx, ciphertext + len, &len);
+    if( rs != OPENSSL_SUCCESS_ ) {
+
+        return -1;
     }
     *ciphertext_len += len;
-    /* Clean up */
-    EVP_CIPHER_CTX_free(ctx);
 
     return 0;
 }
 
 
+#ifdef __cplusplus
+}
+
+#endif

@@ -1,3 +1,7 @@
+#pragma once
+#ifndef KEY_WRAPPER_HPP
+#define KEY_WRAPPER_HPP
+
 #include "createkeys.h"
 #include <memory>
 #include <vector>
@@ -95,3 +99,4 @@ getAndClearIv();
 };
 
 }
+#endif

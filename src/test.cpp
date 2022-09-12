@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "keysWrapper.hpp"
+#include "cryptoWrapper.hpp"
 #include "encrypt.h"
 #include "decrypt.h"
 
@@ -13,6 +14,9 @@
 /* Степень (математическая?) параллельности scrypt - влияет на время выполнения */
 #define SCRYPT_DEGREE_OF_PARALLELISM 1 
 
+#define BLOCK_PADDING (16 - 1)
+
+#define TEST_CRYPTO_BUF_SIZE 1000
 
 int main( int argc, char *argv[])
 {
@@ -24,49 +28,58 @@ int main( int argc, char *argv[])
     keywrapper::Key key(kS, num, b, p );
     /* create keys */
     key.create("12345678901234567890123456789013", "98765432109876543210987654321098");
-    std::string teststring = "vasyavasyavasya";
+    const std::string teststring = "vasyavasyavasya";
     /* end create keys */
 
     /* crypt and decrypt */
 
-    uint64_t pt_len = teststring.length();
-    std::vector<uint8_t> encryptBuf;
-    encryptBuf.resize(1000); // 1000 for test
-    uint64_t ciphertextLen = 0;
+    cryptowrapper::CryptoBuf encryptBuf;
+    // encryptBuf.buf.resize(teststring.length() + BLOCK_PADDING);
+    encryptBuf.buf.resize(TEST_CRYPTO_BUF_SIZE);
+    encryptBuf.cryptoSize = 0;
 
-    std::vector<uint8_t> decryptBuf;
-    decryptBuf.resize(1000); // 1000 for test
-    uint64_t plaintextLen = 0;
-    
-    int rs;
-    key.createIv();
+    cryptowrapper::CryptoBuf decryptBuf;
+    // decryptBuf.buf.resize(teststring.length());
+    decryptBuf.buf.resize(TEST_CRYPTO_BUF_SIZE);
+    decryptBuf.cryptoSize = 0;
+
+    int rs = key.createIv();
+    if (rs) {
+        return -1;
+    }
     keywrapper::IvResult iv = key.getAndClearIv();
-    if (iv.ready) {
-    rs = encrypt_aes_(reinterpret_cast<const uint8_t*>(teststring.data()),
-                      teststring.length(),
-                      key.getKey().result.data(),
-                      iv.iv.data(),
-                      encryptBuf.data(),
-                      &ciphertextLen);
-    }
 
-    if (!rs) {
-        rs = decrypt_aes_ (   encryptBuf.data(),
-                              ciphertextLen,
-                              key.getKey().result.data(),
-                              iv.iv.data(),
-                              decryptBuf.data(),
-                              &plaintextLen );
-    }
+    cryptowrapper::Encrypt encrypt;
+    rs = encrypt.init();
+    cryptowrapper::Decrypt decrypt;
+    decrypt.init();
 
-    if (!rs) {
+    std::vector<char> plainData(teststring.begin(), teststring.end());
 
-        for (size_t i = 0; i < plaintextLen; ++i) {
 
-            std::cout << decryptBuf[i];
+    if (iv.ready && key.getKey().keyGenerated ) {
+
+        rs = encrypt.run(teststring,
+                         key.getKey(),
+                         iv.iv,
+                         encryptBuf);
+        if (rs != 0) {
+
+            std::cout << "not encrypt, error "  << std::endl;
+            return -1;
         }
-        std::cout << std::endl;
-    }
+        rs = decrypt.run(encryptBuf,key.getKey(), iv.iv , decryptBuf);
 
+        if (rs != 0) {
+
+            std::cout << "not decrypt, error "  << std::endl;
+            return -1;
+        }
+        for (size_t i = 0; i < decryptBuf.cryptoSize; ++i) {
+
+            std::cout << decryptBuf.buf[i] << std::endl;
+
+        }
+    }
     return 0;
 }
