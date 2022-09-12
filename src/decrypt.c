@@ -22,8 +22,9 @@ int decrypt_aes_( EVP_CIPHER_CTX * ctx,
     int rs = 0;
     rs = EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv);
 
-    if( rs != 1 ) {
-        printf("C here1");
+    if( rs != OPENSSL_SUCCESS_ ) {
+
+        ERR_print_errors_fp(stderr);
         return -1;
     } 
 
@@ -36,8 +37,9 @@ int decrypt_aes_( EVP_CIPHER_CTX * ctx,
                            &len,
                            ciphertext,
                            ciphertext_len);
-    if (rs != 1 ) {
-        printf("C here2 ");
+    if ( rs != OPENSSL_SUCCESS_ ) {
+
+        ERR_print_errors_fp(stderr);
         return -1;
 
     }
@@ -48,9 +50,9 @@ int decrypt_aes_( EVP_CIPHER_CTX * ctx,
      * this stage.
      */
     rs = EVP_DecryptFinal_ex(ctx, plaintext + len, &len);
-    if(rs != 1) {
+    if( rs != OPENSSL_SUCCESS_ ) {
+
         ERR_print_errors_fp(stderr);
-        printf("C here3 is %d", rs);
         return -1;
     }
 

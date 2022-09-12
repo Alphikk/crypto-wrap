@@ -125,12 +125,10 @@ cryptowrapper::Decrypt::run(const CryptoBuf & cipherText,
 {
     int rs = 0;
     if (!this->ctx) {
-        std::cout << "here 1 "  << std::endl;
         return -1;
     }
 
     if ( !key.keyGenerated ) {
-        std::cout << "here 2 "  << std::endl;
         return -1;
     }
 

@@ -16,7 +16,7 @@ extern "C" {
 
 #include "general.h"
 
-#define OPENSSL_SUCCESS_ 1
+
 
 int
 encrypt_aes_(EVP_CIPHER_CTX *ctx,

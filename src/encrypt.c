@@ -33,6 +33,8 @@ encrypt_aes_(EVP_CIPHER_CTX *ctx,
     rs = EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv);
 
     if( rs != OPENSSL_SUCCESS_) {
+
+        ERR_print_errors_fp(stderr);
         return -1;
     }
     /*
@@ -41,7 +43,8 @@ encrypt_aes_(EVP_CIPHER_CTX *ctx,
      */
     rs = EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len);
     if( rs != OPENSSL_SUCCESS_) {
-        
+
+        ERR_print_errors_fp(stderr);
         return -1;
     }
         
@@ -52,7 +55,8 @@ encrypt_aes_(EVP_CIPHER_CTX *ctx,
      */
     rs = EVP_EncryptFinal_ex(ctx, ciphertext + len, &len);
     if( rs != OPENSSL_SUCCESS_ ) {
-
+        
+        ERR_print_errors_fp(stderr);
         return -1;
     }
     *ciphertext_len += len;

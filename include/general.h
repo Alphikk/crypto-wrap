@@ -10,6 +10,7 @@ extern "C" {
 
 #include <stddef.h>
 
+#define OPENSSL_SUCCESS_ 1
 
 #ifdef __cplusplus
 }
