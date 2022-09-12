@@ -30,9 +30,13 @@ add_library(key_wrapper SHARED src/keysWrapper.cpp)
 target_include_directories(key_wrapper PUBLIC ${INCLUDE_DIR})
 target_link_libraries(createkeys)
 
+add_library(crypto_wrapper SHARED src/cryptoWrapper.cpp)
+target_include_directories(crypto_wrapper PUBLIC ${INCLUDE_DIR})
+target_link_libraries(encrypt)
+
 
 add_executable(test src/test.cpp)
 target_include_directories(test PUBLIC ${INCLUDE_DIR})
-target_link_libraries(test key_wrapper createkeys encrypt decrypt)
+target_link_libraries(test key_wrapper crypto_wrapper createkeys encrypt decrypt)
 
 
