@@ -32,7 +32,7 @@ target_link_libraries(createkeys)
 
 add_library(crypto_wrapper SHARED src/cryptoWrapper.cpp)
 target_include_directories(crypto_wrapper PUBLIC ${INCLUDE_DIR})
-target_link_libraries(encrypt)
+target_link_libraries(encrypt decrypt)
 
 
 add_executable(test src/test.cpp)
