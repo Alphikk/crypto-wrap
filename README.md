@@ -1,5 +1,2 @@
-# cryptoQR
-My small cryptography project
-
-requirements:
-openssl-dev (as deb package)
+# crypto-wrap
+openssl and scrypt c++ simple wrapper
