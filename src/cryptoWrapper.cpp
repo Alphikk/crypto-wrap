@@ -1,6 +1,5 @@
 #include "cryptoWrapper.hpp"
 
-
 /// @brief  Encrypt
 cryptowrapper::Encrypt::Encrypt()
 {
@@ -148,3 +147,4 @@ cryptowrapper::Decrypt::run(const CryptoBuf & cipherText,
     return rs;
 
 }
+
