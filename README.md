@@ -1,2 +1,2 @@
-# cryptoQR
-QR code cryptography project
+# crypto-wrap
+openssl and scrypt c++ simple wrapper
